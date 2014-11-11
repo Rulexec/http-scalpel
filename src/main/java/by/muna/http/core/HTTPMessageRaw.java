@@ -3,12 +3,14 @@ package by.muna.http.core;
 import by.muna.io.IAsyncByteInputStream;
 import by.muna.io.IAsyncByteOutputStream;
 import by.muna.io.IByteWriter;
+import by.muna.io.returnable.IAsyncReturnableInputStream;
 import by.muna.monads.AsyncFutureUtil;
 import by.muna.monads.IAsyncFuture;
 import by.muna.monads.IAsyncMonad;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 class HTTPMessageRaw implements IHTTPMessageRaw {
@@ -25,12 +27,7 @@ class HTTPMessageRaw implements IHTTPMessageRaw {
     }
 
     @Override
-    public IAsyncMonad<String, Object> onStartLine() {
-        return this.httpInputStream.onStartLine(this.messageNo);
-    }
-
-    @Override
-    public void onHeaderLine(BiConsumer<String, Object> consumer) {
+    public void onHeaderLine(Consumer<String> consumer) {
         this.httpInputStream.onHeaderLine(this.messageNo, consumer);
     }
 
@@ -53,7 +50,7 @@ class HTTPMessageRaw implements IHTTPMessageRaw {
     }
 
     @Override
-    public IAsyncByteInputStream getBodyInputStream() {
+    public IAsyncReturnableInputStream getBodyInputStream() {
         return this.httpInputStream.getBodyInputStream(this.messageNo);
     }
 
