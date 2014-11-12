@@ -51,11 +51,17 @@ public class HTTPConnection implements IHTTPConnection {
 
     @Override
     public IAsyncFuture<Object> onEnd() {
-        return AsyncFutureUtil.parallel(Arrays.asList(this.inputStream.onEnd(), this.outputStream.onEnd()), x -> true);
+        return AsyncFutureUtil.parallel(
+            Arrays.<IAsyncFuture<Object>>asList(this.inputStream.onEnd(), this.outputStream.onEnd()),
+            x -> true
+        );
     }
 
     @Override
     public IAsyncFuture<Object> end() {
-        return AsyncFutureUtil.parallel(Arrays.asList(this.inputStream.end(), this.outputStream.end()), x -> true);
+        return AsyncFutureUtil.parallel(
+            Arrays.<IAsyncFuture<Object>>asList(this.inputStream.end(), this.outputStream.end()),
+            x -> true
+        );
     }
 }
