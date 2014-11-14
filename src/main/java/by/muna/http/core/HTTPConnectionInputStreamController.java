@@ -1,12 +1,12 @@
 package by.muna.http.core;
 
-import by.muna.io.AsyncReturnableInputStream;
 import by.muna.io.AsyncStreamUtil;
-import by.muna.io.RawBytesByteReader;
-import by.muna.io.StoringAsyncInputStream;
 import by.muna.io.IAsyncByteInputStream;
 import by.muna.io.IByteReader;
-import by.muna.io.returnable.IAsyncReturnableInputStream;
+import by.muna.io.InputStreamWithReturnableInput;
+import by.muna.io.MyAsyncStreamUtil;
+import by.muna.io.RawBytesByteReader;
+import by.muna.io.StoringAsyncInputStream;
 import by.muna.monads.IAsyncFuture;
 import by.muna.monads.OneTimeEventAsyncFuture;
 import by.muna.util.BytesUtil;
@@ -34,24 +34,28 @@ class HTTPConnectionInputStreamController {
 
     private IAsyncByteInputStream inputStream;
     private StoringAsyncInputStream bufferingStream = new StoringAsyncInputStream();
-    private IAsyncReturnableInputStream returnableStream = new AsyncReturnableInputStream(this.bufferingStream);
+    private InputStreamWithReturnableInput returnableStream = new InputStreamWithReturnableInput(this.bufferingStream);
 
     private Map<Integer, Consumer<String>> headersLineConsumers = new HashMap<>();
     private Map<Integer, OneTimeEventAsyncFuture<Object>> headersEndEvents = new HashMap<>();
     //private Map<Integer, OneTimeEventAsyncFuture<Object>> errorEvents = new HashMap<>();
     private OneTimeEventAsyncFuture<Object> errorEvent = new OneTimeEventAsyncFuture<>();
 
+    //
+
     HTTPConnectionInputStreamController(IAsyncByteInputStream inputStream) {
         this.inputStream = inputStream;
 
         // FIXME: here must be truly buffering, not storing stream
         AsyncStreamUtil.pipe(inputStream, this.bufferingStream.getOutputStream());
-        this.returnableStream.onCanRead(this::inputReading);
+
+        //MyAsyncStreamUtil.pipeToStreams(this.returnableStream, );
+        //this.returnableStream.onCanRead(this::inputReading);
     }
     private void requestReading() {
         this.returnableStream.requestReading();
     }
-    private boolean inputReading(IByteReader reader) {
+    /*private boolean inputReading(IByteReader reader) {
         switch (this.messagePhase) {
         case HEADERS:
             int readed = reader.read(this.headersBuffer, this.headersBufferOffset);
@@ -108,7 +112,7 @@ class HTTPConnectionInputStreamController {
         }
 
         return true;
-    }
+    }*/
 
     void onHeaderLine(int messageNo, Consumer<String> consumer) {
         this.headersLineConsumers.put(messageNo, consumer);
@@ -130,7 +134,7 @@ class HTTPConnectionInputStreamController {
         return this.errorEvent;
     }
 
-    IAsyncReturnableInputStream getBodyInputStream(int messageNo) {
+    InputStreamWithReturnableInput getBodyInputStream(int messageNo) {
         return null;
     }
 }

@@ -1,14 +1,11 @@
 package by.muna.http.core;
 
-import by.muna.io.IAsyncByteInputStream;
 import by.muna.io.IAsyncByteOutputStream;
-import by.muna.io.returnable.IAsyncReturnableInputStream;
+import by.muna.io.InputStreamWithReturnableInput;
 import by.muna.monads.AsyncFutureUtil;
 import by.muna.monads.IAsyncFuture;
-import by.muna.monads.IAsyncMonad;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -30,6 +27,6 @@ public interface IHTTPMessageRaw {
     /**
      * @return all returned bytes will be recognized as next HTTP-message.
      */
-    IAsyncReturnableInputStream getBodyInputStream();
+    InputStreamWithReturnableInput getBodyInputStream();
     IAsyncByteOutputStream getBodyOutputStream();
 }
